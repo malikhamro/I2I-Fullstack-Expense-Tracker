@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Migration Dashboard</title>
+    <link rel="stylesheet" href="/static/css/styles.css">
+</head>
+<body>
+    <header>
+        <h1>Migration Dashboard</h1>
+    </header>
+    <main>
+        <section id="migration-progress">
+            <h2>Migration Progress</h2>
+            <div id="progress-details">
+                <!-- Progress details will be dynamically loaded here -->
+            </div>
+        </section>
+        <section id="migration-status">
+            <h2>Migration Status</h2>
+            <div id="status-details">
+                <!-- Status details will be dynamically loaded here -->
+            </div>
+        </section>
+    </main>
+    <footer>
+        <p>&copy; 2023 Migration Dashboard</p>
+    </footer>
+
+    <script src="/static/js/scripts.js"></script>
+    <script>
+        // Function to update the dashboard with migration progress and status
+        async function updateDashboard() {
+            try {
+                let progressResponse = await fetch('/api/migration/progress');
+                let statusResponse = await fetch('/api/migration/status');
+
+                if (!progressResponse.ok || !statusResponse.ok) {
+                    throw new Error('Failed to fetch migration data');
+                }
+
+                let progressData = await progressResponse.json();
+                let statusData = await statusResponse.json();
+
+                document.getElementById('progress-details').innerText = JSON.stringify(progressData, null, 2);
+                document.getElementById('status-details').innerText = JSON.stringify(statusData, null, 2);
+            } catch (error) {
+                console.error('Error updating dashboard:', error);
+                document.getElementById('progress-details').innerText = 'Error fetching progress data';
+                document.getElementById('status-details').innerText = 'Error fetching status data';
+            }
+        }
+
+        // Initial call to update the dashboard when the page loads
+        updateDashboard();
+
+        // Set an interval to periodically update the dashboard
+        setInterval(updateDashboard, 60000); // Updates every 60 seconds
+    </script>
+</body>
+</html>
